@@ -1,0 +1,98 @@
+.demo-gallery-layout {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background: #f5f8f9;
+  color: #233a4a;
+  font-family: 'Inter', 'Roboto', sans-serif;
+}
+
+.demo-gallery-sidebar {
+  display: flex;
+  width: 270px;
+  flex: 0 0 270px;
+  flex-direction: column;
+  overflow: hidden;
+  background: #fff;
+  border-right: 1px solid #e8edef;
+}
+
+.demo-gallery-brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 21px 20px 19px;
+  border-bottom: 1px solid #f0f3f4;
+}
+
+.demo-gallery-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 39px;
+  height: 39px;
+  border-radius: 13px;
+  background: linear-gradient(145deg, #40c3b4, #20a6a1);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+  box-shadow: 0 5px 12px #25aaa53b;
+}
+
+.demo-gallery-brand div { display: flex; flex-direction: column; gap: 3px; }
+.demo-gallery-brand strong { color: #244356; font-size: 15px; letter-spacing: -0.3px; }
+.demo-gallery-brand div span { color: #9aa8b0; font-size: 8px; font-weight: 800; letter-spacing: 1px; }
+.demo-gallery-label { padding: 18px 20px 9px; color: #a0adb5; font-size: 9px; font-weight: 800; letter-spacing: 1px; }
+
+.demo-gallery-navigation {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 12px 12px;
+  scrollbar-color: #dce5e8 transparent;
+  scrollbar-width: thin;
+}
+
+.demo-gallery-group { margin: 10px 0 16px; }
+.demo-gallery-group h2 { margin: 0 8px 6px; color: #91a0a9; font-size: 10px; font-weight: 800; }
+.demo-gallery-link { display: flex; align-items: center; gap: 10px; min-height: 34px; padding: 7px 10px; border-radius: 8px; color: #607583; font-size: 10px; font-weight: 600; text-decoration: none; transition: background 0.15s ease, color 0.15s ease; }
+.demo-gallery-link:hover { background: #f3f8f8; color: #278e89; }
+.demo-gallery-link.active { background: #e9f8f5; color: #198f89; font-weight: 750; }
+.demo-gallery-link-mark { width: 6px; height: 6px; flex: 0 0 6px; border: 1.5px solid #b1c0c6; border-radius: 2px; }
+.demo-gallery-link.active .demo-gallery-link-mark { border-color: #27aaa3; background: #27aaa3; box-shadow: 0 0 0 3px #d5f1ed; }
+
+.demo-gallery-sidebar-note { display: flex; align-items: flex-start; gap: 8px; margin: 12px; padding: 11px; border: 1px solid #e4f0ef; border-radius: 9px; background: #f6fbfa; color: #82949e; font-size: 9px; line-height: 1.55; }
+.demo-gallery-sidebar-note span { flex-shrink: 0; color: #2da69c; font-weight: 800; }
+
+.demo-gallery-content { display: flex; min-width: 0; flex: 1; flex-direction: column; overflow: hidden; }
+.demo-gallery-topbar { display: flex; align-items: center; justify-content: space-between; min-height: 64px; flex-shrink: 0; padding: 0 30px; border-bottom: 1px solid #e9eef0; background: #fff; }
+.demo-gallery-topbar > div { display: flex; flex-direction: column; gap: 3px; }
+.demo-gallery-top-kicker { color: #a0adb5; font-size: 8px; font-weight: 800; letter-spacing: 1px; }
+.demo-gallery-topbar strong { color: #355163; font-size: 12px; }
+.demo-gallery-top-badge { display: inline-flex; align-items: center; gap: 7px; color: #81939d; font-size: 9px; }
+.demo-gallery-top-badge span { width: 7px; height: 7px; border-radius: 50%; background: #5bbd82; box-shadow: 0 0 0 3px #e7f6ec; }
+.demo-gallery-outlet { flex: 1; overflow: auto; padding: 25px 30px 0; }
+.demo-gallery-outlet .demo-page { padding-top: 0; }
+
+@media (max-width: 900px) {
+  .demo-gallery-sidebar { width: 225px; flex-basis: 225px; }
+  .demo-gallery-outlet { padding: 20px 20px 0; }
+  .demo-gallery-topbar { padding: 0 20px; }
+}
+
+@media (max-width: 650px) {
+  .demo-gallery-layout { flex-direction: column; }
+  .demo-gallery-sidebar { width: 100%; height: 40vh; flex: 0 0 40vh; }
+  .demo-gallery-brand { padding: 9px 14px; }
+  .demo-gallery-logo { width: 30px; height: 30px; border-radius: 9px; font-size: 15px; }
+  .demo-gallery-label { padding: 8px 14px 4px; font-size: 8px; }
+  .demo-gallery-navigation { display: flex; flex-direction: column; gap: 5px; overflow-x: hidden; overflow-y: auto; padding: 3px 12px 9px; }
+  .demo-gallery-group { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px 5px; margin: 4px 0; }
+  .demo-gallery-group h2 { grid-column: 1 / -1; margin: 0 7px 3px; font-size: 9px; }
+  .demo-gallery-link { min-height: 26px; padding: 4px 7px; font-size: 9px; white-space: nowrap; }
+  .demo-gallery-sidebar-note { display: none; }
+  .demo-gallery-outlet { padding: 16px 12px 0; }
+  .demo-gallery-topbar { min-height: 56px; padding: 0 12px; }
+  .demo-gallery-top-badge { font-size: 0; }
+  .demo-gallery-top-badge span { width: 9px; height: 9px; }
+}

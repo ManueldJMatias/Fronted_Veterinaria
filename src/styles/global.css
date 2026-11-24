@@ -1,0 +1,24 @@
+/* ==========================================================================
+   index.css - Estilos globales de la aplicación
+   ========================================================================== */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body, #root {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    font-family: 'Inter', 'Roboto', sans-serif;
+    background-color: #f8fafc;
+}
+
+/* Forzar SweetAlert encima de cualquier modal */
+.swal-encima {
+    z-index: 99999 !important;
+}

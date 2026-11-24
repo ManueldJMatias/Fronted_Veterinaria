@@ -1,0 +1,180 @@
+import React, { useState, useEffect } from 'react';
+import './ListaMedicosEstilos.css';
+import TarjetaMedico from './TarjetaMedico';
+import { veterinarioService } from '../../../services/api';
+import FormularioMedicoAdminModal from './FormularioMedicoAdminModal';
+
+const ListaMedicos = ({ esAdmin = false }) => {
+    const [cargando, setCargando] = useState(true);
+    const [busqueda, setBusqueda] = useState('');
+    const [paginaActual, setPaginaActual] = useState(1);
+    const [tamanoPagina, setTamanoPagina] = useState(5);
+    const [medicos, setMedicos] = useState([]);
+    const [error, setError] = useState('');
+    
+    // Estados para el Modal del Administrador
+    const [modalAbierto, setModalAbierto] = useState(false);
+    const [medicoAEditar, setMedicoAEditar] = useState(null);
+
+    useEffect(() => {
+        const cargarMedicos = async () => {
+            try {
+                setCargando(true);
+                const datos = await veterinarioService.obtenerVeterinarios();
+                setMedicos(datos);
+            } catch (err) {
+                console.error("Error al cargar veterinarios:", err);
+                setMedicos([]);
+            } finally {
+                setCargando(false);
+            }
+        };
+
+        cargarMedicos();
+    }, []);
+
+    const medicosFiltrados = medicos.filter(medico => {
+        const nombreCompleto = `${medico.nombre} ${medico.apPaterno} ${medico.apMaterno}`.toLowerCase();
+        return nombreCompleto.includes(busqueda.toLowerCase()) ||
+               medico.especialidad.toLowerCase().includes(busqueda.toLowerCase());
+    });
+
+    const indiceUltimoMedico = paginaActual * tamanoPagina;
+    const indicePrimerMedico = indiceUltimoMedico - tamanoPagina;
+    const medicosPaginados = medicosFiltrados.slice(indicePrimerMedico, indiceUltimoMedico);
+    const totalPaginas = Math.ceil(medicosFiltrados.length / tamanoPagina);
+
+    return (
+        <div className="contenedorListaMedicos">
+            <div className="cabeceraMedicos">
+                <div className="textosCabecera">
+                    <h2 className="tituloMedicos">Directorio de Médicos</h2>
+                    <p className="subtituloMedicos">
+                        {esAdmin ? 'Gestión de veterinarios y personal médico.' : 'Conoce a nuestros especialistas y sus horarios de atención.'}
+                    </p>
+                </div>
+                {esAdmin && (
+                    <button 
+                        className="btn-agregar-medico"
+                        onClick={() => {
+                            setMedicoAEditar(null);
+                            setModalAbierto(true);
+                        }}
+                    >
+                        + Agregar Médico
+                    </button>
+                )}
+            </div>
+
+            <div className="barraFiltros">
+                <div className="contenedorBuscador">
+                    <input 
+                        type="text" 
+                        placeholder="Buscar por nombre o especialidad..." 
+                        value={busqueda}
+                        onChange={(e) => {
+                            setBusqueda(e.target.value);
+                            setPaginaActual(1);
+                        }}
+                        className="inputBuscadorMedicos"
+                    />
+                </div>
+                
+                <div className="contenedorPaginacionSuperior">
+                    <div className="opcionesTamanoPagina">
+                        <label>Mostrar:</label>
+                        <select 
+                            value={tamanoPagina} 
+                            onChange={(e) => {
+                                setTamanoPagina(Number(e.target.value));
+                                setPaginaActual(1);
+                            }}
+                        >
+                            <option value={5}>5</option>
+                            <option value={10}>10</option>
+                            <option value={20}>20</option>
+                        </select>
+                    </div>
+
+                    <div className="controlesPaginacion">
+                        <button 
+                            className="botonPaginacion" 
+                            onClick={() => setPaginaActual(prev => Math.max(prev - 1, 1))}
+                            disabled={paginaActual === 1}
+                        >
+                            Anterior
+                        </button>
+                        <span className="infoPaginacion">
+                            Página {paginaActual} de {totalPaginas || 1}
+                        </span>
+                        <button 
+                            className="botonPaginacion" 
+                            onClick={() => setPaginaActual(prev => Math.min(prev + 1, totalPaginas))}
+                            disabled={paginaActual === totalPaginas || totalPaginas === 0}
+                        >
+                            Siguiente
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {cargando ? (
+                <div className="estadoCargandoMedicos">
+                    <div className="spinnerMedicos"></div>
+                    <p>Obteniendo directorio de médicos...</p>
+                </div>
+            ) : medicosFiltrados.length === 0 ? (
+                <div className="estadoVacioMedicos">
+                    <p>No se encontraron médicos con esos criterios de búsqueda.</p>
+                </div>
+            ) : (
+                <div className="gridMedicos">
+                    {medicosPaginados.map((medico) => (
+                        <TarjetaMedico 
+                            key={medico.idVeterinario} 
+                            medico={medico} 
+                            esAdmin={esAdmin}
+                            onEditar={() => {
+                                setMedicoAEditar(medico);
+                                setModalAbierto(true);
+                            }}
+                            onEliminar={async (idVeterinario) => {
+                                try {
+                                    await veterinarioService.eliminarVeterinario(idVeterinario);
+                                    setMedicos(prev => prev.filter(m => m.idVeterinario !== idVeterinario));
+                                    Swal.fire('¡Eliminado!', 'El médico ha sido dado de baja del directorio.', 'success');
+                                } catch (err) {
+                                    Swal.fire('Error', err.message || 'No se pudo eliminar al médico.', 'error');
+                                }
+                            }}
+                        />
+                    ))}
+                </div>
+            )}
+
+            {/* Modal para Registrar/Editar Médico (Solo Admin) */}
+            {modalAbierto && esAdmin && (
+                <FormularioMedicoAdminModal 
+                    medicoAEditar={medicoAEditar}
+                    onClose={() => setModalAbierto(false)}
+                    onGuardar={async (datosMedico) => {
+                        try {
+                            if (medicoAEditar) {
+                                const vetActualizado = await veterinarioService.actualizarVeterinario(medicoAEditar.idVeterinario, datosMedico);
+                                setMedicos(prev => prev.map(m => m.idVeterinario === medicoAEditar.idVeterinario ? vetActualizado : m));
+                            } else {
+                                const nuevoVet = await veterinarioService.crearVeterinario(datosMedico);
+                                setMedicos(prev => [nuevoVet, ...prev]);
+                            }
+                        } catch (err) {
+                            console.error("Error al guardar médico en backend:", err);
+                            throw err; // Relanzamos para que el modal sepa del error
+                        }
+                    }}
+                />
+            )}
+        </div>
+    );
+};
+
+export default ListaMedicos;
